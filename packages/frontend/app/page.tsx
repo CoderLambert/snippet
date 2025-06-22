@@ -9,6 +9,10 @@ import { useSnippets } from '@/hooks/useSnippets'
 import SnippetCard from '@/components/SnippetCard'
 import SnippetForm from '@/components/SnippetForm'
 import SearchAndFilter from '@/components/SearchAndFilter'
+import SnippetGrid from '@/components/SnippetGrid'
+import ViewModeToggle from '@/components/ViewModeToggle'
+import SearchResultsPanel from '@/components/SearchResultsPanel'
+import FullscreenEditDialog from '@/components/FullscreenEditDialog'
 import { importTailwindSnippets } from '@/scripts/importSnippets'
 
 export default function Home() {
@@ -36,10 +40,14 @@ export default function Home() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [editingSnippet, setEditingSnippet] = useState<Snippet | null>(null)
   const [isImporting, setIsImporting] = useState(false)
+  const [viewMode, setViewMode] = useState<'grid' | 'list' | 'compact'>('grid')
+  const [showSearchResults, setShowSearchResults] = useState(false)
 
   // 应用过滤器
   useEffect(() => {
     filterSnippets(filters)
+    // 当有搜索词时显示搜索结果面板
+    setShowSearchResults(Boolean(filters.searchTerm))
   }, [filters, filterSnippets])
 
   // 处理创建代码片段
@@ -150,30 +158,10 @@ export default function Home() {
             {isImporting ? '导入中...' : '导入 TailwindCSS 示例'}
           </Button>
           
-          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
-                添加代码片段
-              </Button>
-            </DialogTrigger>
-          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>创建新的代码片段</DialogTitle>
-              <DialogDescription>
-                添加一个新的代码片段到您的收藏中
-              </DialogDescription>
-            </DialogHeader>
-            
-            <SnippetForm
-              tags={tags}
-              categories={categories}
-              onSubmit={handleCreateSnippet}
-              onCancel={handleCloseCreateDialog}
-              isLoading={loading}
-            />
-                      </DialogContent>
-          </Dialog>
+          <Button onClick={() => setIsCreateDialogOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            添加代码片段
+          </Button>
         </div>
       </div>
 
@@ -196,33 +184,83 @@ export default function Home() {
         onFiltersChange={handleFiltersChange}
       />
 
-      {/* 搜索结果统计 */}
-      {!loading && (filters.searchTerm || filters.languageFilter || filters.categoryFilter) && (
-        <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Search className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-              <span className="text-sm font-medium text-blue-800 dark:text-blue-200">
-                搜索结果: 找到 {filteredSnippets.length} 个代码片段
-              </span>
+      {/* 搜索结果统计和视图切换 */}
+      {!loading && (
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          {/* 搜索结果统计 */}
+          {(filters.searchTerm || filters.languageFilter || filters.categoryFilter) && (
+            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md flex-1">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Search className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  <span className="text-sm font-medium text-blue-800 dark:text-blue-200">
+                    搜索结果: 找到 {filteredSnippets.length} 个代码片段
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-xs text-blue-600 dark:text-blue-400">
+                  {filters.searchTerm && (
+                    <span className="bg-blue-100 dark:bg-blue-800 px-2 py-1 rounded">
+                      关键词: "{filters.searchTerm}"
+                    </span>
+                  )}
+                  {filters.languageFilter && (
+                    <span className="bg-blue-100 dark:bg-blue-800 px-2 py-1 rounded">
+                      语言: {filters.languageFilter}
+                    </span>
+                  )}
+                  {filters.categoryFilter && (
+                    <span className="bg-blue-100 dark:bg-blue-800 px-2 py-1 rounded">
+                      分类: {categories.find(c => c.id === Number(filters.categoryFilter))?.name}
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
-            <div className="flex items-center gap-2 text-xs text-blue-600 dark:text-blue-400">
-              {filters.searchTerm && (
-                <span className="bg-blue-100 dark:bg-blue-800 px-2 py-1 rounded">
-                  关键词: "{filters.searchTerm}"
-                </span>
-              )}
-              {filters.languageFilter && (
-                <span className="bg-blue-100 dark:bg-blue-800 px-2 py-1 rounded">
-                  语言: {filters.languageFilter}
-                </span>
-              )}
-              {filters.categoryFilter && (
-                <span className="bg-blue-100 dark:bg-blue-800 px-2 py-1 rounded">
-                  分类: {categories.find(c => c.id === Number(filters.categoryFilter))?.name}
-                </span>
-              )}
-            </div>
+          )}
+          
+          {/* 视图模式切换 */}
+          <div className="flex items-center gap-2">
+            {/* 搜索结果视图切换 */}
+            {filters.searchTerm && (
+              <div className="flex items-center gap-1 p-1 bg-gray-100 dark:bg-gray-800 rounded-lg mr-2">
+                <Button
+                  variant={showSearchResults ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setShowSearchResults(true)}
+                  className={`h-8 px-3 transition-all duration-200 ${
+                    showSearchResults 
+                      ? 'bg-white dark:bg-gray-700 shadow-sm' 
+                      : 'hover:bg-white/50 dark:hover:bg-gray-700/50'
+                  }`}
+                  title="详细搜索结果"
+                >
+                  <Search className="h-4 w-4 mr-1" />
+                  <span className="hidden sm:inline">搜索详情</span>
+                </Button>
+                <Button
+                  variant={!showSearchResults ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setShowSearchResults(false)}
+                  className={`h-8 px-3 transition-all duration-200 ${
+                    !showSearchResults 
+                      ? 'bg-white dark:bg-gray-700 shadow-sm' 
+                      : 'hover:bg-white/50 dark:hover:bg-gray-700/50'
+                  }`}
+                  title="网格视图"
+                >
+                  <Code className="h-4 w-4 mr-1" />
+                  <span className="hidden sm:inline">网格视图</span>
+                </Button>
+              </div>
+            )}
+            
+            {/* 普通视图模式切换 */}
+            {!showSearchResults && (
+              <ViewModeToggle 
+                viewMode={viewMode} 
+                onViewModeChange={setViewMode}
+              />
+            )}
           </div>
         </div>
       )}
@@ -235,44 +273,50 @@ export default function Home() {
         </div>
       )}
 
-      {/* 代码片段网格 */}
-      {!loading && (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {filteredSnippets.map((snippet) => (
-            <SnippetCard
-              key={snippet.id}
-              snippet={snippet}
+      {/* 代码片段展示 */}
+      {!loading && filteredSnippets.length > 0 && (
+        <>
+          {/* 搜索结果详细面板 */}
+          {showSearchResults ? (
+            <SearchResultsPanel
+              snippets={filteredSnippets}
+              searchTerm={filters.searchTerm}
+              onSnippetClick={handleEditSnippet}
+            />
+          ) : (
+            /* 普通网格视图 */
+            <SnippetGrid
+              snippets={filteredSnippets}
               onEdit={handleEditSnippet}
               onDelete={handleDeleteSnippet}
               onSave={handleSaveSnippet}
               searchTerm={filters.searchTerm}
-            />
-          ))}
-        </div>
-      )}
-
-      {/* 编辑对话框 */}
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>编辑代码片段</DialogTitle>
-            <DialogDescription>
-              修改代码片段的信息
-            </DialogDescription>
-          </DialogHeader>
-          
-          {editingSnippet && (
-            <SnippetForm
-              snippet={editingSnippet}
-              tags={tags}
-              categories={categories}
-              onSubmit={handleUpdateSnippet}
-              onCancel={handleCloseEditDialog}
-              isLoading={loading}
+              viewMode={viewMode}
             />
           )}
-        </DialogContent>
-      </Dialog>
+        </>
+      )}
+
+      {/* 创建对话框 - 全屏支持 */}
+      <FullscreenEditDialog
+        isOpen={isCreateDialogOpen}
+        onClose={handleCloseCreateDialog}
+        tags={tags}
+        categories={categories}
+        onSubmit={handleCreateSnippet}
+        isLoading={loading}
+      />
+
+      {/* 编辑对话框 - 全屏支持 */}
+      <FullscreenEditDialog
+        isOpen={isEditDialogOpen}
+        onClose={handleCloseEditDialog}
+        snippet={editingSnippet || undefined}
+        tags={tags}
+        categories={categories}
+        onSubmit={handleUpdateSnippet}
+        isLoading={loading}
+      />
 
       {/* 空状态 */}
       {!loading && filteredSnippets.length === 0 && (

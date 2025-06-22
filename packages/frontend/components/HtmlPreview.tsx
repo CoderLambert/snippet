@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 
 interface HtmlPreviewProps {
   htmlCode: string
@@ -8,6 +8,7 @@ interface HtmlPreviewProps {
 }
 
 export default function HtmlPreview({ htmlCode, className }: HtmlPreviewProps) {
+  const [previewError, setPreviewError] = useState<string | null>(null)
   // 使用 useMemo 来优化性能，只在 htmlCode 变化时重新生成
   const fullHtml = useMemo(() => {
     // 检查是否已经是完整的HTML文档
@@ -59,13 +60,47 @@ export default function HtmlPreview({ htmlCode, className }: HtmlPreviewProps) {
 </html>`
   }, [htmlCode])
 
+  // 如果没有代码，显示提示
+  if (!htmlCode.trim()) {
+    return (
+      <div className={`w-full h-full flex items-center justify-center bg-gray-50 rounded-md ${className}`}>
+        <p className="text-gray-500">请输入HTML代码以查看预览</p>
+      </div>
+    )
+  }
+
+  // 如果有错误，显示错误信息
+  if (previewError) {
+    return (
+      <div className={`w-full h-full flex flex-col items-center justify-center bg-red-50 rounded-md p-4 ${className}`}>
+        <p className="text-red-600 mb-2">预览加载失败</p>
+        <p className="text-red-500 text-sm">{previewError}</p>
+        <button 
+          onClick={() => setPreviewError(null)}
+          className="mt-2 px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700"
+        >
+          重试
+        </button>
+      </div>
+    )
+  }
+
   return (
-    <iframe
-      srcDoc={fullHtml}
-      className={`w-full border-0 bg-white rounded-md ${className}`}
-      title="HTML Preview"
-      sandbox="allow-scripts"
-      style={{ minHeight: '300px', maxWidth: '100%' }}
-    />
+    <div className={`w-full h-full ${className}`}>
+      <iframe
+        srcDoc={fullHtml}
+        className="w-full h-full border-0 bg-white rounded-md"
+        title="HTML Preview"
+        sandbox="allow-scripts allow-same-origin allow-forms"
+        style={{ minHeight: '300px', maxWidth: '100%' }}
+        onLoad={() => {
+          setPreviewError(null)
+        }}
+        onError={(e) => {
+          console.error('Preview iframe error:', e)
+          setPreviewError('iframe加载失败')
+        }}
+      />
+    </div>
   )
 } 
