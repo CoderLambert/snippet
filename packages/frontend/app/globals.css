@@ -1,0 +1,337 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 94.1%;
+  }
+
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    -webkit-line-clamp: 2;
+  }
+}
+
+/* Monaco Editor 自定义样式 */
+.monaco-editor {
+  font-family: 'SF Mono', Consolas, 'Monaco', 'Inconsolata', 'Fira Code', 'Droid Sans Mono', monospace !important;
+}
+
+.monaco-editor .margin {
+  background-color: transparent !important;
+}
+
+.monaco-editor .minimap {
+  display: none !important;
+}
+
+/* 代码查看器悬浮按钮样式 */
+.code-viewer-buttons {
+  backdrop-filter: blur(4px);
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dark .code-viewer-buttons {
+  background-color: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 全屏对话框样式 */
+.fullscreen-dialog .monaco-editor {
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+}
+
+/* 全屏编辑器样式 */
+.fullscreen-editor {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.fullscreen-editor .monaco-editor {
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+}
+
+/* 响应式布局 */
+@media (max-width: 768px) {
+  .fullscreen-editor .flex {
+    flex-direction: column;
+  }
+  
+  .fullscreen-editor [class~="w-1/2"] {
+    width: 100%;
+  }
+  
+  .fullscreen-editor .border-r {
+    border-right: none;
+    border-bottom: 1px solid #e2e8f0;
+  }
+}
+
+/* 禁用Monaco Editor的错误标记样式 */
+.monaco-editor .squiggly-error,
+.monaco-editor .squiggly-warning,
+.monaco-editor .squiggly-info {
+  display: none !important;
+}
+
+/* React Resizable Panels 样式优化 */
+[data-panel-resize-handle-enabled] {
+  position: relative;
+}
+
+[data-panel-resize-handle-enabled]:hover {
+  z-index: 10;
+}
+
+/* 水平拖拽分隔条 */
+[data-panel-resize-handle-enabled][data-panel-resize-handle-id*="horizontal"] {
+  background: linear-gradient(90deg, transparent 0%, rgba(59, 130, 246, 0.1) 50%, transparent 100%);
+}
+
+[data-panel-resize-handle-enabled][data-panel-resize-handle-id*="horizontal"]:hover {
+  background: linear-gradient(90deg, transparent 0%, rgba(59, 130, 246, 0.2) 50%, transparent 100%);
+}
+
+/* 垂直拖拽分隔条 */
+[data-panel-resize-handle-enabled][data-panel-resize-handle-id*="vertical"] {
+  background: linear-gradient(180deg, transparent 0%, rgba(59, 130, 246, 0.1) 50%, transparent 100%);
+}
+
+[data-panel-resize-handle-enabled][data-panel-resize-handle-id*="vertical"]:hover {
+  background: linear-gradient(180deg, transparent 0%, rgba(59, 130, 246, 0.2) 50%, transparent 100%);
+}
+
+/* 拖拽时的活动状态 */
+[data-panel-resize-handle-enabled][data-resize-handle-active] {
+  background: rgba(59, 130, 246, 0.3) !important;
+}
+
+/* 拖拽分隔条的指示器 */
+.resize-handle-indicator {
+  position: absolute;
+  background: rgba(59, 130, 246, 0.6);
+  border-radius: 2px;
+  transition: all 0.2s ease;
+}
+
+/* 水平分隔条指示器 */
+.resize-handle-indicator.horizontal {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 3px;
+  height: 20px;
+}
+
+/* 垂直分隔条指示器 */
+.resize-handle-indicator.vertical {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 3px;
+}
+
+/* 暗色主题下的拖拽分隔条 */
+.dark [data-panel-resize-handle-enabled][data-panel-resize-handle-id*="horizontal"] {
+  background: linear-gradient(90deg, transparent 0%, rgba(96, 165, 250, 0.15) 50%, transparent 100%);
+}
+
+.dark [data-panel-resize-handle-enabled][data-panel-resize-handle-id*="horizontal"]:hover {
+  background: linear-gradient(90deg, transparent 0%, rgba(96, 165, 250, 0.25) 50%, transparent 100%);
+}
+
+.dark [data-panel-resize-handle-enabled][data-panel-resize-handle-id*="vertical"] {
+  background: linear-gradient(180deg, transparent 0%, rgba(96, 165, 250, 0.15) 50%, transparent 100%);
+}
+
+.dark [data-panel-resize-handle-enabled][data-panel-resize-handle-id*="vertical"]:hover {
+  background: linear-gradient(180deg, transparent 0%, rgba(96, 165, 250, 0.25) 50%, transparent 100%);
+}
+
+.dark [data-panel-resize-handle-enabled][data-resize-handle-active] {
+  background: rgba(96, 165, 250, 0.4) !important;
+}
+
+/* 面板组的样式 */
+[data-panel-group] {
+  height: 100%;
+}
+
+[data-panel] {
+  overflow: hidden;
+}
+
+/* 面板内容的滚动条样式 */
+[data-panel] .overflow-auto::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+[data-panel] .overflow-auto::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+[data-panel] .overflow-auto::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.5);
+  border-radius: 3px;
+}
+
+[data-panel] .overflow-auto::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.7);
+}
+
+.dark [data-panel] .overflow-auto::-webkit-scrollbar-thumb {
+  background: rgba(75, 85, 99, 0.5);
+}
+
+.dark [data-panel] .overflow-auto::-webkit-scrollbar-thumb:hover {
+  background: rgba(75, 85, 99, 0.7);
+}
+
+/* Monaco Editor 搜索高亮样式 */
+.monaco-editor .search-highlight {
+  background-color: rgba(255, 255, 0, 0.3) !important;
+  border: 1px solid rgba(255, 255, 0, 0.8) !important;
+  border-radius: 2px !important;
+}
+
+.monaco-editor .search-highlight-inline {
+  background-color: rgba(255, 255, 0, 0.2) !important;
+  border-radius: 2px !important;
+}
+
+.dark .monaco-editor .search-highlight {
+  background-color: rgba(255, 255, 0, 0.4) !important;
+  border: 1px solid rgba(255, 255, 0, 0.9) !important;
+}
+
+.dark .monaco-editor .search-highlight-inline {
+  background-color: rgba(255, 255, 0, 0.3) !important;
+}
+
+/* 搜索匹配项动画效果 */
+.search-highlight {
+  animation: highlightPulse 2s ease-in-out;
+}
+
+@keyframes highlightPulse {
+  0% {
+    background-color: rgba(255, 255, 0, 0.6);
+  }
+  50% {
+    background-color: rgba(255, 255, 0, 0.3);
+  }
+  100% {
+    background-color: rgba(255, 255, 0, 0.3);
+  }
+}
+
+/* 搜索匹配结果展开动画 */
+.search-matches-container {
+  transition: all 0.3s ease-in-out;
+}
+
+.search-matches-expanded {
+  animation: expandMatches 0.3s ease-out;
+}
+
+@keyframes expandMatches {
+  from {
+    max-height: 200px;
+    opacity: 0.8;
+  }
+  to {
+    max-height: 400px;
+    opacity: 1;
+  }
+}
+
+/* 搜索匹配结果滚动条样式 */
+.search-matches-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.search-matches-scroll::-webkit-scrollbar-track {
+  background: rgba(255, 255, 0, 0.1);
+  border-radius: 2px;
+}
+
+.search-matches-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 193, 7, 0.5);
+  border-radius: 2px;
+}
+
+.search-matches-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 193, 7, 0.7);
+}
+
+.dark .search-matches-scroll::-webkit-scrollbar-track {
+  background: rgba(255, 255, 0, 0.2);
+}
+
+.dark .search-matches-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 193, 7, 0.6);
+}
+
+.dark .search-matches-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 193, 7, 0.8);
+} 

@@ -1,0 +1,47 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique
+  description String?
+  snippets    Snippet[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("categories")
+}
+
+model Tag {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique
+  snippets    Snippet[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("tags")
+}
+
+model Snippet {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String?
+  language    String
+  code        String
+  categoryId  Int
+  category    Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  tags        Tag[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("snippets")
+} 
